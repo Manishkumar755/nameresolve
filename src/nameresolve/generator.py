@@ -35,3 +35,30 @@ class Record:
     entity_id: int
     name: str
     transform: str
+
+# Spelling variations common in transliterated Indian names.
+# Each tuple is (pattern_to_find, replacement).
+VOWEL_SWAPS = [
+    ("aa", "a"),
+    ("a", "aa"),
+    ("ee", "i"),
+    ("i", "ee"),
+    ("oo", "u"),
+    ("u", "oo"),
+]
+
+CONSONANT_SWAPS = [
+    ("v", "w"),
+    ("w", "v"),
+    ("j", "z"),
+    ("z", "j"),
+    ("ph", "f"),
+    ("f", "ph"),
+    ("sh", "s"),
+    ("s", "sh"),
+]
+
+# Characters used when introducing a random typo.
+TYPO_CHARS = "aeiounrstlm"    
+
+    
