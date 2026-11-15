@@ -80,4 +80,15 @@ def _swap(name: str, pairs: list[tuple[str, str]], rng: random.Random) -> str | 
     index = lowered.index(src)
     return name[:index] + dst + name[index + len(src):]
 
+def _typo(name: str, rng: random.Random) -> str:
+    """Replace one randomly chosen letter with a random character from TYPO_CHARS.
+
+    Only alphabetic characters are candidates, so spaces are never touched.
+    Assumes `name` contains at least one letter.
+    """
+    positions = [i for i, c in enumerate(name) if c.isalpha()]
+    index = rng.choice(positions)
+    replacement = rng.choice(TYPO_CHARS)
+    return name[:index] + replacement + name[index + 1:]
+
     
