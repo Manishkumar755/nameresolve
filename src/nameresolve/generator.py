@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+from collections import defaultdict
 from dataclasses import dataclass
 
 # Pool of invented first and last names.
@@ -128,5 +129,35 @@ def generate(n_entities: int = 200, seed: int = 42) -> list[Record]:
             records.append(Record(record_id, entity_id, text, transform))
             record_id += 1
     return records
+
+def make_pairs(
+    records: list[Record], rng: random.Random, neg_per_pos: int = 2
+) -> list[tuple[Record, Record, int]]:
+    """Build labeled pairs: 1 for same entity, 0 for different entities."""
+    by_entity: dict[int, list[Record]] = defaultdict(list)
+    token_index: dict[str, list[Record]] = defaultdict(list)
+    for r in records:
+        by_entity[r.entity_id].append(r)
+        for tok in r.name.lower().split():
+            token_index[tok].append(r)
+
+    # Positives: every pair inside the same entity.
+    positives: list[tuple[Record, Record, int]] = []
+    for recs in by_entity.values():
+        for i in range(len(recs)):
+            for j in range(i + 1, len(recs)):
+                positives.append((recs[i], recs[j], 1))
+
+    # Negatives: for each anchor, alternate hard (shared word) and random picks.
+    negatives: list[tuple[Record, Record, int]] = []
+    for a, _, _ in positives:
+        for k in range(neg_per_pos):
+            tok = rng.choice(a.name.lower().split())
+            pool = token_index[tok] if k % 2 == 0 else records
+            b = rng.choice(pool)
+            if b.entity_id != a.entity_id:
+                negatives.append((a, b, 0))
+
+    return positives + negatives
 
     
