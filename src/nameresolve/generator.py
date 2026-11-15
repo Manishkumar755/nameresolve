@@ -110,4 +110,23 @@ def variants(first: str, last: str, rng: random.Random) -> list[tuple[str, str]]
             out.append((label, swapped))
     return out
 
+def generate(n_entities: int = 200, seed: int = 42) -> list[Record]:
+    """Build the full record list: one canonical name plus variants per entity."""
+    rng = random.Random(seed)
+
+    combos = [(f, l) for f in FIRST_NAMES for l in LAST_NAMES]
+    if n_entities > len(combos):
+        raise ValueError(f"need at most {len(combos)} entities; add more names")
+    rng.shuffle(combos)
+
+    records: list[Record] = []
+    record_id = 0
+    for entity_id, (first, last) in enumerate(combos[:n_entities]):
+        records.append(Record(record_id, entity_id, f"{first} {last}", "canonical"))
+        record_id += 1
+        for transform, text in variants(first, last, rng):
+            records.append(Record(record_id, entity_id, text, transform))
+            record_id += 1
+    return records
+
     
