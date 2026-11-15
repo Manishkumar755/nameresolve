@@ -91,4 +91,23 @@ def _typo(name: str, rng: random.Random) -> str:
     replacement = rng.choice(TYPO_CHARS)
     return name[:index] + replacement + name[index + 1:]
 
+def variants(first: str, last: str, rng: random.Random) -> list[tuple[str, str]]:
+    """Return (transform_tag, variant_name) pairs for one entity.
+
+    Always produces reorder, initial, honorific, and typo variants.
+    Adds vowel or consonant variants only when a rule matches the name.
+    """
+    full = f"{first} {last}"
+    out: list[tuple[str, str]] = [
+        ("reorder", f"{last} {first}"),
+        ("initial", f"{first[0]}. {last}"),
+        ("honorific", f"Mr {full}"),
+        ("typo", _typo(full, rng)),
+    ]
+    for label, pairs in (("vowel", VOWEL_SWAPS), ("consonant", CONSONANT_SWAPS)):
+        swapped = _swap(full, pairs, rng)
+        if swapped is not None:
+            out.append((label, swapped))
+    return out
+
     
