@@ -61,4 +61,23 @@ CONSONANT_SWAPS = [
 # Characters used when introducing a random typo.
 TYPO_CHARS = "aeiounrstlm"    
 
+def _swap(name: str, pairs: list[tuple[str, str]], rng: random.Random) -> str | None:
+    """Apply one random spelling swap from `pairs` to `name`.
+
+    Returns the modified name, or None if no pattern in `pairs` matches.
+    The original casing outside the swapped part is preserved.
+    """
+    lowered = name.lower()
+
+    # Keep only the rules whose source pattern appears in the name.
+    options = [(src, dst) for src, dst in pairs if src in lowered]
+    if not options:
+        return None
+
+    src, dst = rng.choice(options)
+
+    # Replace the first occurrence only, so one swap is one change.
+    index = lowered.index(src)
+    return name[:index] + dst + name[index + len(src):]
+
     
