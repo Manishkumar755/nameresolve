@@ -160,4 +160,24 @@ def make_pairs(
 
     return positives + negatives
 
+def split_entities(
+    entity_ids: list[int], rng: random.Random
+) -> tuple[set[int], set[int], set[int]]:
+    """Split entities 70/15/15 so no entity appears in two splits."""
+    ids = list(entity_ids)
+    rng.shuffle(ids)
+    a, b = int(0.7 * len(ids)), int(0.85 * len(ids))
+    return set(ids[:a]), set(ids[a:b]), set(ids[b:])
+
+
+def split_pairs(pairs, train_e, val_e, test_e):
+    """Keep a pair only when both records fall in the same split."""
+    out: dict[str, list] = {"train": [], "val": [], "test": []}
+    for a, b, y in pairs:
+        for name, ents in (("train", train_e), ("val", val_e), ("test", test_e)):
+            if a.entity_id in ents and b.entity_id in ents:
+                out[name].append((a, b, y))
+                break
+    return out
+
     
