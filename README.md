@@ -41,5 +41,6 @@ uv run pytest
 
 Logs record counts only, never raw names.
 
-\## Live demo: https://nameresolve.onrender.com/docs
+## Live demo
+https://nameresolve.onrender.com/docs
 
